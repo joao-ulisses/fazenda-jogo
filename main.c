@@ -3,7 +3,6 @@
 
 typedef struct
 {
-    int energia;
     int dinheiro;
     int sementes;
     int batataEstoque;
@@ -13,7 +12,6 @@ typedef struct
 
 void defineJogador(tJogador *jogador)
 {
-    jogador->energia = 100;
     jogador->dinheiro = 50;
     jogador->sementes = 0;
     jogador->batataEstoque = 0;
@@ -85,7 +83,7 @@ int proximaBatata(No *no) {
 }
 
 void comprarSementes(tJogador *jogador) {
-    int preco = 25;
+    int preco = 10;
     if (jogador->dinheiro >= preco) {
         jogador->dinheiro = jogador->dinheiro - preco;
         jogador->sementes++;
@@ -98,7 +96,7 @@ void comprarSementes(tJogador *jogador) {
 void venderBatata(tJogador *jogador) {
     if (jogador->batataEstoque > 0) {
         jogador->batataEstoque--;
-        jogador->dinheiro = jogador->dinheiro + 30;
+        jogador->dinheiro = jogador->dinheiro + 15;
     } else {
         printf("\nSem batatas no estoque para vender\n");
         system("PAUSE");
@@ -119,7 +117,6 @@ void passarDia(tJogador *jogador, No *batatas) {
 
 void jogar()
 {
-    //comoJogar();
     char opcaoJogo = '0';
     tJogador jogador;
     defineJogador(&jogador);
@@ -127,17 +124,16 @@ void jogar()
     for (;;)
     {
         system("CLS");
-        printf("####################################################################################");
-        printf("\n\n\n\t Energia: %d", jogador.energia);
-        printf("\t\t\t\t Dia: %d", jogador.dia);
+        printf("########################################################################################################");
         printf("\n\n\t Batatas plantadas: %d", jogador.batatasPlantadas);
+        printf("\t\t\t\t Dia: %d", jogador.dia);
         printf("\n\n\t Proxima batata brota em: %d", proximaBatata(batatas));
         printf("\n\n\t Sementes disponiveis: %d", jogador.sementes);
         printf("\n\n\t Dinheiro: %d", jogador.dinheiro);
         printf("\n\n\t Batatas no estoque: %d", jogador.batataEstoque);
         printf("\n\n\n\n\n\n\n\n");
-        printf("\t 0 - Colher Batata | 1- Vender batata | 2- Comprar semente | 3- Plantar Batata | 4- Passar dia");
-        printf("\n\n\n####################################################################################\n");
+        printf("\t 0 - Comprar Semente | 1 - Plantar batata | 2 - Colher batata | 3 - Vender Batata | 4 - Passar o dia");
+        printf("\n\n\n########################################################################################################\n");
 
         fflush(stdin);
         opcaoJogo = getchar();
@@ -145,17 +141,16 @@ void jogar()
         switch (opcaoJogo)
         {
             case '0':
-                colherBatata(&batatas, &jogador);
-                break;
-            case '1':
-                venderBatata(&jogador);
-                break;
-            case '2':
                 comprarSementes(&jogador);
                 break;
-            case '3':
+            case '1':
                 plantarBatata(&batatas, &jogador);
                 break;
+            case '2':
+                colherBatata(&batatas, &jogador);
+                break;
+            case '3':
+                venderBatata(&jogador);
             case '4':
                 passarDia(&jogador, batatas);
                 break;
@@ -175,8 +170,7 @@ int menu()
     system("cls");
     printf("\n#################################Fazenda Padulisses#################################\n");
     printf("\n[ 1 ] - Jogar");
-    printf("\n[ 2 ] - Como jogar");
-    printf("\n[ 3 ] - Sair\n");
+    printf("\n[ 2 ] - Sair\n");
     printf("\n####################################################################################\n");
 
     fflush(stdin);
@@ -187,9 +181,6 @@ int menu()
             jogar();
             break;
         case '2':
-            //comoJogar();
-            break;
-        case '3':
             return 0;
         default:
             printf("\nOpcao invalida\n");
