@@ -119,8 +119,8 @@ void jogar()
 {
     char opcaoJogo = '0';
     tJogador jogador;
-    defineJogador(&jogador);
     No *batatas = NULL;
+    defineJogador(&jogador);
     for (;;)
     {
         system("CLS");
@@ -151,6 +151,7 @@ void jogar()
                 break;
             case '3':
                 venderBatata(&jogador);
+                break;
             case '4':
                 passarDia(&jogador, batatas);
                 break;
