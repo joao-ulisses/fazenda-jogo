@@ -8,6 +8,8 @@ typedef struct
     int batataEstoque;
     int batatasPlantadas;
     int dia;
+    int limiteEstoque;
+    int limitePlantadas;
 } tJogador;
 
 void defineJogador(tJogador *jogador)
@@ -17,6 +19,8 @@ void defineJogador(tJogador *jogador)
     jogador->batataEstoque = 0;
     jogador->batatasPlantadas = 0;
     jogador->dia = 1;
+    jogador->limiteEstoque = 4;
+    jogador->limitePlantadas = 3;
 }
 
 typedef struct no
@@ -28,7 +32,7 @@ typedef struct no
 void plantarBatata(No **batatas, tJogador *jogador)
 {
     No *aux, *novo = malloc(sizeof(No));
-    if (jogador->sementes > 0) {
+    if (jogador->sementes > 0 && jogador->batatasPlantadas < jogador->limitePlantadas) {
         jogador->sementes--;
         jogador->batatasPlantadas++;
 
@@ -48,7 +52,7 @@ void plantarBatata(No **batatas, tJogador *jogador)
             printf("\nErro ao alocar na memoria.\n");
         }
     } else {
-        printf("\nErro, voce nao tem sementes\\n");
+        printf("\nErro, voce nao tem sementes ou espaco para plantar batatas\n");
         system("PAUSE");
     }
 }
@@ -59,13 +63,13 @@ void colherBatata(No **fila, tJogador *jogador) {
 
     if (*fila) {
         filaValor = *fila;
-        if (filaValor->diasRestantes == 0) {
+        if (filaValor->diasRestantes == 0 && jogador->batataEstoque < jogador->limiteEstoque) {
             remover = *fila;
             *fila = remover->proximo;
             jogador->batataEstoque++;
             jogador->batatasPlantadas--;
         } else {
-            printf("\nSem batatas para colher\n");
+            printf("\nSem batatas para colher ou estoque cheio\n");
             system("PAUSE");
         }
     } else{
@@ -115,6 +119,53 @@ void passarDia(tJogador *jogador, No *batatas) {
     jogador->dia++;
 }
 
+void melhorias(tJogador *jogador) {
+    char opcaoMelhorias = '0';
+    char sairMelhorias = '0';
+    while (sairMelhorias == '0') {
+        system("CLS");
+        printf("\n######################################Melhorias######################################\n");
+        printf("\n\n\t Total de areas de cultivo: %d", jogador->limitePlantadas);
+        printf("\t\t\t\t Dia: %d", jogador->dia);
+        printf("\n\n\t Tamanho atual do estoque: %d", jogador->limiteEstoque);
+        printf("\n\n\t Dinheiro: $ %d", jogador->dinheiro);
+        printf("\n\n\n\n\n\n\n\n");
+        printf("\t 0 - Aumentar Estoque ($20) | 1 - Aumentar areas de cultivo ($30) | 2 - Voltar para a fazenda");
+        printf("\n\n\n########################################################################################################\n");
+
+        fflush(stdin);
+        opcaoMelhorias = getchar();
+
+        switch (opcaoMelhorias)
+        {
+            case '0':
+                if (jogador->dinheiro >= 20) {
+                    jogador->limiteEstoque++;
+                    jogador->dinheiro = jogador->dinheiro - 20;
+                } else {
+                    printf("\nDinheiro insuficiente\n");
+                    system("PAUSE");
+                }
+                break;
+            case '1':
+                if (jogador->dinheiro >= 30) {
+                    jogador->limitePlantadas++;
+                    jogador->dinheiro = jogador->dinheiro - 30;
+                } else {
+                    printf("\nDinheiro insuficiente\n");
+                    system("PAUSE");
+                }
+                break;
+            case '2':
+                sairMelhorias = '1';
+                break;
+            default:
+                printf("\nOpcao invalida\n");
+                system("PAUSE");
+        }
+    }
+}
+
 void jogar()
 {
     char opcaoJogo = '0';
@@ -125,14 +176,14 @@ void jogar()
     {
         system("CLS");
         printf("########################################################################################################");
-        printf("\n\n\t Batatas plantadas: %d", jogador.batatasPlantadas);
+        printf("\n\n\t Batatas plantadas: %d / %d", jogador.batatasPlantadas, jogador.limitePlantadas);
         printf("\t\t\t\t Dia: %d", jogador.dia);
         printf("\n\n\t Proxima batata brota em: %d", proximaBatata(batatas));
         printf("\n\n\t Sementes disponiveis: %d", jogador.sementes);
         printf("\n\n\t Dinheiro: %d", jogador.dinheiro);
-        printf("\n\n\t Batatas no estoque: %d", jogador.batataEstoque);
+        printf("\n\n\t Batatas no estoque: %d / %d", jogador.batataEstoque, jogador.limiteEstoque);
         printf("\n\n\n\n\n\n\n\n");
-        printf("\t 0 - Comprar Semente | 1 - Plantar batata | 2 - Colher batata | 3 - Vender Batata | 4 - Passar o dia");
+        printf("\t 0 - Comprar Semente | 1 - Plantar batata | 2 - Colher batata | 3 - Vender Batata | 4 - Passar o dia\n\n\t 5 - Melhorias");
         printf("\n\n\n########################################################################################################\n");
 
         fflush(stdin);
@@ -154,6 +205,9 @@ void jogar()
                 break;
             case '4':
                 passarDia(&jogador, batatas);
+                break;
+            case '5':
+                melhorias(&jogador);
                 break;
             default:
                 printf("\nOpcao invalida\n");
