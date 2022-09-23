@@ -124,14 +124,14 @@ void melhorias(tJogador *jogador) {
     char sairMelhorias = '0';
     while (sairMelhorias == '0') {
         system("CLS");
-        printf("\n######################################Melhorias######################################\n");
+        printf("\n############################################## Melhorias #######################################################\n");
         printf("\n\n\t Total de areas de cultivo: %d", jogador->limitePlantadas);
         printf("\t\t\t\t Dia: %d", jogador->dia);
         printf("\n\n\t Tamanho atual do estoque: %d", jogador->limiteEstoque);
         printf("\n\n\t Dinheiro: $ %d", jogador->dinheiro);
         printf("\n\n\n\n\n\n\n\n");
         printf("\t 0 - Aumentar Estoque ($20) | 1 - Aumentar areas de cultivo ($30) | 2 - Voltar para a fazenda");
-        printf("\n\n\n########################################################################################################\n");
+        printf("\n\n\n################################################################################################################\n");
 
         fflush(stdin);
         opcaoMelhorias = getchar();
@@ -166,25 +166,53 @@ void melhorias(tJogador *jogador) {
     }
 }
 
-void jogar()
+void salvarJogo(tJogador *jogador) {
+    FILE *f = fopen("file.txt", "w");
+    if (f == NULL)
+    {
+        printf("Erro para abrir arquivo!\n");
+        exit(1);
+    }
+    fprintf(f, "%d %d %d %d %d %d", jogador->dinheiro, jogador->sementes, jogador->batataEstoque, jogador->dia, jogador->limiteEstoque, jogador->limitePlantadas);
+    fclose(f);
+}
+
+void carregarJogo(tJogador *jogador) {
+    FILE *reads = fopen("file.txt", "r");
+    if (reads==NULL) {
+        perror("Error");
+        return 1;
+    }
+    fscanf(reads, "%d %d %d %d %d %d", &jogador->dinheiro, &jogador->sementes, &jogador->batataEstoque, &jogador->dia, &jogador->limiteEstoque, &jogador->limitePlantadas);
+}
+
+
+void jogar(char tipoJogo)
 {
     char opcaoJogo = '0';
     tJogador jogador;
     No *batatas = NULL;
-    defineJogador(&jogador);
+    if (tipoJogo == 'n') {
+        defineJogador(&jogador);
+    } else if (tipoJogo == 'c') {
+        carregarJogo(&jogador);
+    } else {
+        printf("\nERRO BRUTAL\n");
+    }
+
     for (;;)
     {
         system("CLS");
-        printf("########################################################################################################");
+        printf("######################################################################################################################");
         printf("\n\n\t Batatas plantadas: %d / %d", jogador.batatasPlantadas, jogador.limitePlantadas);
         printf("\t\t\t\t Dia: %d", jogador.dia);
-        printf("\n\n\t Proxima batata brota em: %d", proximaBatata(batatas));
+        printf("\n\n\t Proxima batata brota em: %d dias", proximaBatata(batatas));
         printf("\n\n\t Sementes disponiveis: %d", jogador.sementes);
         printf("\n\n\t Dinheiro: %d", jogador.dinheiro);
         printf("\n\n\t Batatas no estoque: %d / %d", jogador.batataEstoque, jogador.limiteEstoque);
         printf("\n\n\n\n\n\n\n\n");
-        printf("\t 0 - Comprar Semente | 1 - Plantar batata | 2 - Colher batata | 3 - Vender Batata | 4 - Passar o dia\n\n\t 5 - Melhorias");
-        printf("\n\n\n########################################################################################################\n");
+        printf("\t 0 - Comprar Semente | 1 - Plantar batata | 2 - Colher batata | 3 - Vender Batata | 4 - Passar o dia\n\n\t 5 - Melhorias | 6 - Salvar jogo");
+        printf("\n\n\n######################################################################################################################\n");
 
         fflush(stdin);
         opcaoJogo = getchar();
@@ -209,6 +237,11 @@ void jogar()
             case '5':
                 melhorias(&jogador);
                 break;
+            case '6':
+                printf("\nAo salvar o jogo, voce ira apenas salvar os seus dados de dinheiro, dia, sementes disponiveis e batatas no estoque\n");
+                system("PAUSE");
+                salvarJogo(&jogador);
+                break;
             default:
                 printf("\nOpcao invalida\n");
                 system("PAUSE");
@@ -223,9 +256,10 @@ int menu()
     char opcao = '0';
 
     system("cls");
-    printf("\n#################################Fazenda Padulisses#################################\n");
+    printf("\n################################ Fazenda Padulisses ################################\n");
     printf("\n[ 1 ] - Jogar");
-    printf("\n[ 2 ] - Sair\n");
+    printf("\n[ 2 ] - Carregar jogo");
+    printf("\n[ 3 ] - Sair\n");
     printf("\n####################################################################################\n");
 
     fflush(stdin);
@@ -233,9 +267,12 @@ int menu()
     switch (opcao)
     {
         case '1':
-            jogar();
+            jogar('n');
             break;
         case '2':
+            jogar('c');
+            break;
+        case '3':
             return 0;
         default:
             printf("\nOpcao invalida\n");
